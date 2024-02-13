@@ -1,5 +1,8 @@
 <?php
 
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+
 return [
   'generator' => [
 
@@ -46,7 +49,8 @@ return [
          * Define custom_models
          */
     'custom_models' => [
-      //
+      // Role::class,
+      // Permission::class,
     ],
 
     /*

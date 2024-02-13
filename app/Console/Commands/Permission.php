@@ -58,7 +58,9 @@ class Permission extends Command
             if ($this->option('yes-to-all') || $this->confirm('This will delete existing permissions. Do you want to continue?', false)) {
                 $this->comment('Deleting Permissions');
                 try {
-                    DB::table(config('permission.table_names.permissions'))->delete();
+                    DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+                    DB::table(config('permission.table_names.permissions'))->truncate();
+                    DB::statement('SET FOREIGN_KEY_CHECKS=1;');
                     $this->comment('Deleted Permissions');
                 } catch (\Exception $exception) {
                     $this->warn($exception->getMessage());
