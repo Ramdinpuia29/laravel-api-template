@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\Api\AuthenticationController;
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,10 +22,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
     // PUBLIC ENDPOINTS
-    Route::post('auth/login', [AuthenticationController::class, 'loginWithEmailPassword'])->name('login');
+    Route::post('auth/login', [AuthController::class, 'login'])->name('login');
 
     // AUTHENTICATION REQUIRED ENDPOINTS
-    Route::middleware('auth:api')->group(function () {
-        Route::post('auth/logout', [AuthenticationController::class, 'logout']);
+    Route::middleware('auth:sanctum')->group(function () {
+        // AUTH ROUTES
+        Route::group(['prefix' => 'auth'], function () {
+            Route::post('logout', [AuthController::class, 'logout']);
+            Route::get('user', [AuthController::class, 'user']);
+        });
     });
 });
