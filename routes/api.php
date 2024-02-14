@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AclController;
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +31,15 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
         Route::group(['prefix' => 'auth'], function () {
             Route::post('logout', [AuthController::class, 'logout']);
             Route::get('user', [AuthController::class, 'user']);
+        });
+
+        // ACL ROUTES
+        Route::group(['prefix' => 'acl', 'middleware' => 'role:Super admin'], function () {
+            Route::get('roles', [AclController::class, 'getAllRoles']);
+            Route::post('roles', [AclController::class, 'createRole']);
+            Route::put('roles/{roleId}', [AclController::class, 'updateRole']);
+            Route::delete('roles/{roleId}', [AclController::class, 'deleteRole']);
+            Route::get('permissions', [AclController::class, 'getAllPermissions']);
         });
     });
 });
