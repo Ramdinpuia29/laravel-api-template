@@ -9,9 +9,27 @@ use Spatie\Permission\Models\Role;
 
 class AclController extends Controller
 {
+    private string $superAdminName;
+
+    public function __construct()
+    {
+        $this->superAdminName = config('roles-permissions.super_admin_name');
+    }
+
     public function getAllRoles()
     {
-        $roles = Role::select(['id', 'name'])->get();
+        $isSuperAdmin = request()->user()->hasRole($this->superAdminName);
+
+        $query = Role::query();
+
+        $roles = [];
+
+        // Helai logic hi ACL admin awm chuan a ngai dawn
+        if (!$isSuperAdmin) {
+            $query->where('name', '!=', $this->superAdminName);
+        }
+
+        $roles = $query->select(['id', 'name'])->get();
 
         return response()->json([
             'success' => true,
@@ -47,13 +65,6 @@ class AclController extends Controller
         ]);
 
         $role = Role::find($roleId);
-
-        if (!$role) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Role not found'
-            ], 200);
-        }
 
         $role->update([
             'name' => $data['name']
