@@ -4,6 +4,8 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 return [
+  'super_admin_name' => 'Super admin',
+
   'generator' => [
 
     'guard_names' => [
