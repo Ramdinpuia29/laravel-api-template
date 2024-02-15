@@ -21,6 +21,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Bypass authorization if user is super admin
         Gate::before(function ($user, $ability) {
             return $user->hasRole(config('roles-permissions.super_admin_name')) ? true : null;
         });
