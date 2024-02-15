@@ -38,6 +38,7 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
             Route::get('roles', [AclController::class, 'getAllRoles']);
             Route::post('roles', [AclController::class, 'createRole']);
             Route::put('roles/{roleId}', [AclController::class, 'updateRole']);
+            Route::post('roles/assign/{userId}', [AclController::class, 'assignRolesToUser']);
             Route::delete('roles/{roleId}', [AclController::class, 'deleteRole']);
             Route::get('permissions', [AclController::class, 'getAllPermissions']);
         });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -57,7 +58,7 @@ class AclController extends Controller
         ], 200);;
     }
 
-    public function updateRole(Request $request, int $roleId)
+    public function updateRole(Request $request, string $roleId)
     {
         $data = $request->validate([
             'name' => 'string',
@@ -75,6 +76,22 @@ class AclController extends Controller
         return response()->json([
             'success' => true,
             'role' => $role
+        ], 200);
+    }
+
+    public function assignRolesToUser(Request $request, string $userId)
+    {
+        $data = $request->validate([
+            'roles' => 'required|array'
+        ]);
+
+        $user = User::find($userId);
+
+        $user->syncRoles($data['roles']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Role assigned'
         ], 200);
     }
 
