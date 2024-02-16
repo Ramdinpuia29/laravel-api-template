@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -14,6 +15,7 @@ class AclController extends Controller
 
     public function __construct()
     {
+        $this->middleware('role:Super admin');
         $this->superAdminName = config('roles-permissions.super_admin_name');
     }
 
@@ -30,7 +32,9 @@ class AclController extends Controller
             $query->where('name', '!=', $this->superAdminName);
         }
 
-        $roles = $query->select(['id', 'name'])->get();
+        $roles = $query->with('permissions', function ($query) {
+            $query->select(['id', 'name']);
+        })->select(['id', 'name'])->get();
 
         return response()->json([
             'success' => true,

@@ -18,16 +18,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::group(['prefix' => 'v1'], function () {
     // PUBLIC ENDPOINTS
     Route::post('auth/login', [AuthController::class, 'login'])->name('login');
 
     // AUTHENTICATION REQUIRED ENDPOINTS
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         // AUTH ROUTES
         Route::group(['prefix' => 'auth'], function () {
             Route::post('logout', [AuthController::class, 'logout']);
@@ -38,7 +38,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::apiResource('users', UserController::class);
 
         // ACL ROUTES
-        Route::group(['prefix' => 'acl', 'middleware' => 'role:Super admin'], function () {
+        Route::group(['prefix' => 'acl'], function () {
             Route::get('roles', [AclController::class, 'getAllRoles']);
             Route::post('roles', [AclController::class, 'createRole']);
             Route::put('roles/{roleId}', [AclController::class, 'updateRole']);

@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Spatie\Permission\Exceptions\UnauthorizedException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -35,6 +36,13 @@ class Handler extends ExceptionHandler
                 'message' => 'Unauthorized',
             ], 403);
         });
+
+        // $this->renderable(function (AccessDeniedHttpException $e, $request) {
+        //     return response()->json([
+        //         'success'  => false,
+        //         'message' => 'Access denied',
+        //     ], 403);
+        // });
     }
 
     protected function shouldReturnJson($request, Throwable $e)
