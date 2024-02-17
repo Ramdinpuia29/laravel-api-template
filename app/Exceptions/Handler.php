@@ -6,6 +6,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -37,12 +38,19 @@ class Handler extends ExceptionHandler
             ], 403);
         });
 
-        // $this->renderable(function (AccessDeniedHttpException $e, $request) {
-        //     return response()->json([
-        //         'success'  => false,
-        //         'message' => 'Access denied',
-        //     ], 403);
-        // });
+        $this->renderable(function (AccessDeniedHttpException $e, $request) {
+            return response()->json([
+                'success'  => false,
+                'message' => 'Access denied',
+            ], 403);
+        });
+
+        $this->renderable(function (NotFoundHttpException $e, $request) {
+            return response()->json([
+                'success'  => false,
+                'message' => 'Not found',
+            ], 404);
+        });
     }
 
     protected function shouldReturnJson($request, Throwable $e)

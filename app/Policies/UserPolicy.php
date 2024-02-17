@@ -15,7 +15,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view-any User');
+        return $user->checkPermissionTo('view-any User');
     }
 
     /**
@@ -23,7 +23,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        return $user->can('view User');
+        return $user->checkPermissionTo('view User');
     }
 
     /**
