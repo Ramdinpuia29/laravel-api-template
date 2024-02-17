@@ -11,14 +11,18 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string'
         ]);
 
-        $credentials = $request->only('email', 'password');
+        $existingUser = User::withTrashed()->where('email', $data['email'])->first();
 
-        if (!Auth::attempt($credentials)) {
+        if ($existingUser->trashed()) {
+            $existingUser->restore();
+        }
+
+        if (!Auth::attempt($data)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid credentials'
