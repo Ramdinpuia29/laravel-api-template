@@ -34,7 +34,7 @@ class AclController extends Controller
 
         $roles = $query->with('permissions', function ($query) {
             $query->select(['id', 'name']);
-        })->select(['id', 'name'])->get();
+        })->select(['id', 'name'])->paginate();
 
         return response()->json([
             'success' => true,
@@ -111,7 +111,7 @@ class AclController extends Controller
 
     public function getAllPermissions()
     {
-        $permissions = Permission::select(['id', 'name'])->get();
+        $permissions = Permission::select(['id', 'name'])->paginate();
 
         return response()->json([
             'success' => true,

@@ -17,7 +17,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = User::all();
+        $users = User::paginate();
 
         return response()->json([
             'success' => true,
@@ -50,11 +50,7 @@ class UserController extends Controller
         if ($existingUser && $existingUser->trashed()) {
             $existingUser->restore();
 
-            $existingUser->update([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password'])
-            ]);
+            $existingUser->update($data);
 
             if (isset($data['roles'])) {
                 $existingUser->syncRoles($data['roles']);
@@ -62,11 +58,7 @@ class UserController extends Controller
 
             $user = $existingUser;
         } else {
-            $newUser = User::create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password'])
-            ]);
+            $newUser = User::create($data);
 
             $newUser->syncRoles($data['roles']);
 
@@ -109,13 +101,11 @@ class UserController extends Controller
 
         $user = User::findOrFail($user->id);
 
-        $user->update([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => $data['password'],
-        ]);
+        $user->update($data);
 
-        $user->syncRoles($data['roles']);
+        if (isset($data['roles'])) {
+            $user->syncRoles($data['roles']);
+        }
 
         return response()->json([
             'success' => true,
