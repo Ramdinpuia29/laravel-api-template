@@ -50,6 +50,7 @@ class UserController extends Controller
         if ($existingUser && $existingUser->trashed()) {
             $existingUser->restore();
 
+            // TODO Requires recheck (HASH PASSWORD)
             $existingUser->update($data);
 
             if (isset($data['roles'])) {
@@ -58,6 +59,7 @@ class UserController extends Controller
 
             $user = $existingUser;
         } else {
+            // TODO Requires recheck (HASH PASSWORD)
             $newUser = User::create($data);
 
             $newUser->syncRoles($data['roles']);
@@ -101,6 +103,7 @@ class UserController extends Controller
 
         $user = User::findOrFail($user->id);
 
+        // TODO Requires recheck (HASH PASSWORD)
         $user->update($data);
 
         if (isset($data['roles'])) {

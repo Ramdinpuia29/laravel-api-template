@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AuthController extends Controller
 {
@@ -18,15 +19,12 @@ class AuthController extends Controller
 
         $existingUser = User::withTrashed()->where('email', $data['email'])->first();
 
-        if ($existingUser->trashed()) {
+        if ($existingUser && $existingUser->trashed()) {
             $existingUser->restore();
         }
 
         if (!Auth::attempt($data)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid credentials'
-            ], 401);
+            throw new HttpException(403, 'Unauthorized.');
         }
 
         $user = User::where('email', $request->email)->firstOrFail();
