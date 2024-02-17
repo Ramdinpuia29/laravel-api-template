@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AclController;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -33,6 +34,9 @@ Route::group(['prefix' => 'v1'], function () {
 
         // USER ROUTES
         Route::apiResource('users', UserController::class);
+
+        // AUDIT ROUTE
+        Route::get('audits', [AuditController::class, 'getAllAudits']);
 
         // ACL ROUTES
         Route::group(['prefix' => 'acl'], function () {
