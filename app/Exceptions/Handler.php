@@ -4,9 +4,8 @@ namespace App\Exceptions;
 
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Spatie\Permission\Exceptions\UnauthorizedException;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -31,25 +30,18 @@ class Handler extends ExceptionHandler
             //
         });
 
-        $this->renderable(function (UnauthorizedException $e, $request) {
-            return response()->json([
-                'success'  => false,
-                'message' => 'Unauthorized',
-            ], 403);
-        });
+        $this->renderable(function (HttpException $e, $request) {
+            $statusCode = $e->getStatusCode();
+            $message = $e->getMessage();
 
-        $this->renderable(function (AccessDeniedHttpException $e, $request) {
-            return response()->json([
-                'success'  => false,
-                'message' => 'Access denied',
-            ], 403);
-        });
+            // if (env('APP_ENV') === 'production') {
+            //     $this->logToTelegram($request, $message);
+            // }
 
-        $this->renderable(function (NotFoundHttpException $e, $request) {
             return response()->json([
-                'success'  => false,
-                'message' => 'Not found',
-            ], 404);
+                'success' => false,
+                'message' => $message
+            ], $statusCode);
         });
     }
 
@@ -58,13 +50,30 @@ class Handler extends ExceptionHandler
         return parent::shouldReturnJson($request, $e) || $request->is("api/*");
     }
 
-    protected function unauthenticated($request, AuthenticationException $exception)
+    protected function unauthenticated($request, AuthenticationException $e)
     {
         if ($request->is("api/*")) {
+            $message = $e->getMessage();
+
+            // if (env('APP_ENV') === 'production') {
+            //     $this->logToTelegram($request, $message);
+            // }
+
             return response()->json([
                 'success' => false,
-                'message' => 'Unathenticated'
+                'message' => $message
             ], 401);
         }
+    }
+
+    public function logToTelegram($request, $message)
+    {
+        $url = $request->fullUrl();
+        $host = $request->schemeAndHttpHost();
+        $method = $request->method();
+        $ipAddress = $request->ip();
+
+        $text = "URL: {$url}, HOST: {$host}, METHOD: {$method}, IP ADDRESS: {$ipAddress}, MESSAGE: {$message}";
+        Log::channel('telegram')->alert($text);
     }
 }
