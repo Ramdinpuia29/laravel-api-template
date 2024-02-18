@@ -115,4 +115,6 @@ For more information read the [documentation](https://github.com/grkamil/laravel
 
 ---
 
-_This template is created by [Ramdinpuia29](https://github.com/Ramdinpuia29)_
+_This is not the final version of the template, and will be improved and updated over time._
+
+_By [Ramdinpuia29](https://github.com/Ramdinpuia29)_
