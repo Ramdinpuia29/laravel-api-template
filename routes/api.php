@@ -3,9 +3,8 @@
 use App\Http\Controllers\AclController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TokenController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,6 +36,10 @@ Route::group(['prefix' => 'v1'], function () {
 
         // AUDIT ROUTE
         Route::get('audits', [AuditController::class, 'getAllAudits']);
+
+        // TOKENS ROUTE
+        Route::get('tokens', [TokenController::class, 'getAllTokens']);
+        Route::delete('tokens/{tokenId}', [TokenController::class, 'revoke']);
 
         // ACL ROUTES
         Route::group(['prefix' => 'acl'], function () {
