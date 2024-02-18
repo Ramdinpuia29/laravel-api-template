@@ -50,8 +50,11 @@ class UserController extends Controller
         if ($existingUser && $existingUser->trashed()) {
             $existingUser->restore();
 
-            // TODO Requires recheck (HASH PASSWORD)
-            $existingUser->update($data);
+            $existingUser->update([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password'])
+            ]);
 
             if (isset($data['roles'])) {
                 $existingUser->syncRoles($data['roles']);
@@ -59,8 +62,11 @@ class UserController extends Controller
 
             $user = $existingUser;
         } else {
-            // TODO Requires recheck (HASH PASSWORD)
-            $newUser = User::create($data);
+            $newUser = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password'])
+            ]);
 
             $newUser->syncRoles($data['roles']);
 
@@ -103,8 +109,12 @@ class UserController extends Controller
 
         $user = User::findOrFail($user->id);
 
-        // TODO Requires recheck (HASH PASSWORD)
-        $user->update($data);
+        $user->update([
+            'name' => isset($data['name']) ? $data['name'] : $user->name,
+            'email' => isset($data['email']) ? $data['email'] : $user->email,
+            'password' => isset($data['password']) ? Hash::make($data['password']) : $user->password
+        ]);
+
 
         if (isset($data['roles'])) {
             $user->syncRoles($data['roles']);
@@ -116,9 +126,17 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function destroy(User $user)
+    public function destroy(Request $request, User $user)
     {
+        $data = $request->validate([
+            'email' => 'required|email:rfc,dns'
+        ]);
+
         $user = User::findOrFail($user->id);
+
+        if ($data['email'] != $user->email) {
+            abort(400, 'Incorrect email.');
+        }
 
         $user->delete();
 
