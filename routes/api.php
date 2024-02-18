@@ -34,10 +34,10 @@ Route::group(['prefix' => 'v1'], function () {
         // USER ROUTES
         Route::apiResource('users', UserController::class);
 
-        // AUDIT ROUTE
+        // AUDIT ROUTES
         Route::get('audits', [AuditController::class, 'getAllAudits']);
 
-        // TOKENS ROUTE
+        // TOKENS ROUTES
         Route::get('tokens', [TokenController::class, 'getAllTokens']);
         Route::delete('tokens/{tokenId}', [TokenController::class, 'revoke']);
 
