@@ -2,6 +2,21 @@
 
 ---
 
+<div class="postman-run-button"
+data-postman-action="collection/fork"
+data-postman-visibility="public"
+data-postman-var-1="12320182-6fcac736-ede7-433f-8f2d-67ed43b992e0"
+data-postman-collection-url="entityId=12320182-6fcac736-ede7-433f-8f2d-67ed43b992e0&entityType=collection&workspaceId=6b862512-f677-440f-a1d0-e79ff8671d6a"></div>
+<script type="text/javascript">
+  (function (p,o,s,t,m,a,n) {
+    !p[s] && (p[s] = function () { (p[t] || (p[t] = [])).push(arguments); });
+    !o.getElementById(s+t) && o.getElementsByTagName("head")[0].appendChild((
+      (n = o.createElement("script")),
+      (n.id = s+t), (n.async = 1), (n.src = m), n
+    ));
+  }(window, document, "_pm", "PostmanRunObject", "https://run.pstmn.io/button.js"));
+</script>
+
 ## Features:
 
 -   [API versioning (Currently V1)](#api-versioning)
