@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\PaginationService;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -12,28 +13,31 @@ class AclController extends Controller
 {
     private string $superAdminName;
 
-    public function __construct()
+    public function __construct(private PaginationService $paginationService)
     {
         $this->middleware('role:Super admin');
         $this->superAdminName = config('roles-permissions.super_admin_name');
     }
 
-    public function getAllRoles()
+    public function getAllRoles(Request $request)
     {
-        $isSuperAdmin = request()->user()->hasRole($this->superAdminName);
+        $pagination = $this->paginationService->getPaginationData($request);
+
+        $isSuperAdmin = $request->user()->hasRole($this->superAdminName);
 
         $query = Role::query();
-
-        $roles = [];
 
         // Helai logic hi ACL admin awm chuan a ngai dawn
         if (!$isSuperAdmin) {
             $query->where('name', '!=', $this->superAdminName);
         }
 
-        $roles = $query->with('permissions', function ($query) {
+        $query->with('permissions', function ($query) {
             $query->select(['id', 'name']);
-        })->select(['id', 'name'])->paginate();
+        })->select(['id', 'name']);
+
+        $query->orderBy($pagination['orderBy'], $pagination['order']);
+        $roles = $query->paginate($pagination['perPage'], ['*'], 'page', $pagination['page']);
 
         return response()->json([
             'success' => true,
@@ -108,9 +112,14 @@ class AclController extends Controller
         ], 200);
     }
 
-    public function getAllPermissions()
+    public function getAllPermissions(Request $request)
     {
-        $permissions = Permission::select(['id', 'name'])->paginate();
+        $pagination = $this->paginationService->getPaginationData($request);
+
+        $query = Permission::query();
+
+        $query->orderBy($pagination['orderBy'], $pagination['order']);
+        $permissions = $query->paginate($pagination['perPage'], ['*'], 'page', $pagination['page']);
 
         return response()->json([
             'success' => true,

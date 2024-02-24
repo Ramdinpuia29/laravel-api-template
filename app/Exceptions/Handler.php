@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -30,6 +31,7 @@ class Handler extends ExceptionHandler
             //
         });
 
+        // HTTP EXCEPTIONS
         $this->renderable(function (HttpException $e, $request) {
             $statusCode = $e->getStatusCode();
             $message = $e->getMessage();
@@ -42,6 +44,20 @@ class Handler extends ExceptionHandler
                 'success' => false,
                 'message' => $message
             ], $statusCode);
+        });
+
+        // QUERY EXCEPTIONS
+        $this->renderable(function (QueryException $e, $request) {
+            $message = $e->getMessage();
+
+            // if (env('APP_ENV') === 'production') {
+            //     $this->logToTelegram($request, $message);
+            // }
+
+            return response()->json([
+                'success' => false,
+                'message' => $message
+            ], 500);
         });
     }
 

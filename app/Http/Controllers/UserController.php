@@ -4,20 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\PaginationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
-    public function __construct()
+    public function __construct(private PaginationService $paginationService)
     {
         $this->authorizeResource(User::class, 'user');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::paginate();
+        $pagination = $this->paginationService->getPaginationData($request);
+
+        $query = User::query();
+
+        $query->orderBy($pagination['orderBy'], $pagination['order']);
+        $users = $query->paginate($pagination['perPage'], ['*'], 'page', $pagination['page']);
 
         return response()->json([
             'success' => true,
