@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AuthController extends Controller
@@ -17,25 +18,26 @@ class AuthController extends Controller
             'password' => 'required|string'
         ]);
 
-        $existingUser = User::withTrashed()->where('email', $data['email'])->first();
+        $user = User::withTrashed()->where('email', $data['email'])->first();
 
-        if ($existingUser && $existingUser->trashed()) {
-            $existingUser->restore();
+        if ($user && $user->trashed()) {
+            $user->restore();
         }
 
-        if (!Auth::attempt($data)) {
-            throw new HttpException(403, 'Unauthorized.');
+        if ($user && Hash::check($data['password'], $user->password)) {
+            $token = $user->createToken($data['email'])->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'token' => $token,
+                'user' => $user
+            ], 200);
         }
-
-        $user = User::where('email', $request->email)->firstOrFail();
-
-        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'success' => true,
-            'token' => $token,
-            'user' => $user
-        ], 200);
+            'success' => false,
+            'message' => 'Invalid credentials'
+        ], 401);
     }
 
     public function logout(Request $request)
@@ -54,7 +56,13 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'user' => $user
+            'user' => [
+                "id" => $user->id,
+                "name" => $user->name,
+                "email" => $user->email,
+                'roles' => $user->getRoleNames()->toArray(),
+                'permissions' => $user->getPermissionsViaRoles()->pluck('name')->toArray(),
+            ],
         ], 200);
     }
 }

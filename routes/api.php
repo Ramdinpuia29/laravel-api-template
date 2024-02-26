@@ -18,9 +18,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 // V1 ROUTES
 Route::group(['prefix' => 'v1'], function () {
     // PUBLIC ENDPOINTS
+    Route::get('/sanctum/csrf-cookie', function () {
+        return response('ok', 200);
+    })->name('app.csrf-cookie');
+
     Route::post('auth/login', [AuthController::class, 'login'])->name('login');
 
     // AUTHENTICATION REQUIRED ENDPOINTS
